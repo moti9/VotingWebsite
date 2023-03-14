@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Welcome to VotingApp
+{% endblock title %}
+
+{% block content %}
+<header class="my-2">
+    <div class="jumbotron">
+        <div class="container d-flex flex-wrap justify-content-center align-items-center flex-column">
+            <h1>Welcome to Voting App!</h1>
+            <p class="lead">Cast your vote and make your voice heard!</p>
+            <a class="btn btn-primary btn-lg" href="polls" role="button">Explore Polling</a>
+        </div>
+    </div>
+</header>
+
+<!-- About Section -->
+<section id="about">
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2>About Voting App</h2>
+                {% comment %} <hr> {% endcomment %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <p>Voting App is a web-based application that allows registered voters to cast their votes online. It provides a convenient and secure way for voters to participate in elections without having to physically go to a polling station.</p>
+            </div>
+            <div class="col-lg-6">
+                <p>Voting App uses advanced encryption and authentication techniques to ensure the security and integrity of the voting process. It also provides real-time monitoring and auditing of the voting results to prevent fraud and manipulation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact">
+    <div class="container d-flex flex-wrap justify-content-center flex-column">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <h2>Contact Us</h2>
+          {% comment %} <hr class="divider"> {% endcomment %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <form id="contact-form" method="POST" role="form">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea class="form-control" rows="5" id="message" name="message" placeholder="Your Message" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block m-2">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+{% endblock content %}

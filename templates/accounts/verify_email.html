@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Send Verification Code
+{% endblock title %}
+    
+
+
+
+{% block content %}
+<div class="container d-flex flex-column justify-content-center my-4 flex-wrap">
+    <h3 class="text-center my-2">Verify Email</h3>
+    <div class="row center">
+        <div class="col-md-6 offset-md-3">
+            <!-- {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %} -->
+            {% if email_verification.is_active %}
+            <p class="text-center my-4">Your email has already been verified.</p>
+            {% else %}
+            <form method="POST">
+                {% csrf_token %}
+                <p class="text-center">Please enter the verification code that was sent to your email address:</p>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="code">Code</label>
+                    <input type="text" class="form-control" name="code" placeholder="Enter Code" required>
+                </div>
+                <button type="submit" class="btn btn-primary my-2">Verify</button>
+            </form>                
+            {% endif %}
+                
+        </div>
+    </div>
+</div>
+{% endblock %}
+    
