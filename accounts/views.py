@@ -22,13 +22,17 @@ def login_user(request):
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            user = User(username=username)
-            verified = EmailVerification(user=user)
-            if verified.is_active:
+            if user.is_active:
                 login(request, user)
             else:
-                messages.error(request,"Please activate your account.", extra_tags="alert alert-primary alert-dismissible fade show")
-                return redirect('accounts:verify_email')
+                user = User(username=username)
+                verified = EmailVerification(user=user)
+                # print(verified)
+                if verified.is_active:
+                    login(request, user)
+                else:
+                    messages.error(request,"Please activate your account.", extra_tags="alert alert-primary alert-dismissible fade show")
+                    return redirect('accounts:verify_email')
             redirect_url = request.GET.get('next', 'polls:home')
             return redirect(redirect_url)
         else:
@@ -95,9 +99,12 @@ def create_user(request):
                     # user = User.objects.get(email=email)
                     verification, created = EmailVerification.objects.get_or_create(user=user)
                     if created:
-                        verification.is_active = False
+                        verification.is_active = True
                         code = str(secrets.randbelow(10**8))
                         verification.code = code
+                        verification.save()
+                    if not verification.is_active:
+                        verification.is_active = True
                         verification.save()
                     # verification = EmailVerification(user=user)
                     # verification.save()
@@ -130,11 +137,15 @@ def send_verification_code(request):
             return redirect("accounts:send_verification_code")
         verification, created = EmailVerification.objects.get_or_create(user=user)
         if created:
-            verification.is_active = False
+            verification.is_active = True
             code = str(secrets.randbelow(10**8))
             verification.code = code
             verification.save()
-        
+            
+        if not verification.is_active:
+            verification.is_active = True
+            verification.save()
+            
         subject = 'VotingApp Email Verification Code'
         message = f'Please verify your account to use VotingApp. Your email verification code is: {verification.code}'
         from_email = settings.EMAIL_HOST_USER
@@ -164,10 +175,15 @@ def verify_email(request):
         except EmailVerification.DoesNotExist:
             messages.error(request,"Sorry, some error occured.", extra_tags="alert alert-danger alert-dismissible fade show")
             return redirect('accounts:verify_email')
-        verification.is_active = True
-        user.is_active = True
-        user.save()
-        login(request, user)
+        if verification.is_active:
+            verification.is_active = False
+            verification.save()
+            user.is_active = True
+            user.save()
+            login(request, user)
+        else:
+            messages.error(request,"Sorry your code is invalid.", extra_tags="alert alert-danger alert-dismissible fade show")
+            return redirect("accounts:send_verification_code")
         return redirect('home')
     else:
         pass
