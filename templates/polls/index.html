@@ -4,95 +4,106 @@
 {% block title %}
     Welcome to VotingApp
 {% endblock title %}
-    
+
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 offset-sm-2">
-                <h3 class="text-center m-3">Welcome to Poll List !</h3>
-                <!-- Message Start-->
-                {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                    <div {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    {% endfor %}
+<!-- Message Start-->
+<div class="col-md-10 d-flex justify-content-center offset-md-1 my-5">
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+<!-- Message End-->
+<div class="container my-5 pb-5" style="min-height: 25rem;">
+    <div class="row my-5 d-flex justify-content-center align-items-center shadow rounded">
+        <div class="col-md-6 py-2 pb-2">
+            <h3 class="text-center m-3">Welcome to Poll List !</h3>
+
+
+            <!-- Nav for home page -->
+            <div class="mx-2">
+                <a class="btn btn-{% if 'name' in request.GET %}warning{% else %}primary{% endif %} mb-3"
+                    href="?name=True" role="button"><i class="fas fa-sort-alpha-down"></i>
+                    Name</a>
+                <a class="btn btn-{% if 'date' in request.GET %}warning{% else %}primary{% endif %} mb-3"
+                    href="?date=True" role="button"><i class="far fa-clock"></i> Date</a>
+                <a class="btn btn-{% if 'vote' in request.GET %}warning{% else %}primary{% endif %} mb-3"
+                    href="?vote=True" role="button"><i class="fas fa-poll"></i> Vote</a>
+                <a class="btn btn-success mb-3 float-end" href="{% url 'polls:createpoll' %}" role="button">Create <i
+                        class="fas fa-plus"></i></a>
+            </div>
+            <!-- Nav for home page -->
+
+            <!-- search area start -->
+            <form class="form-inline d-flex flex-warp mb-4">
+                <div class="form-group mx-2">
+                    <input type="search" class="form-control" name="search" placeholder="Search"
+                        value={{ search_term }}>
                 </div>
-                {% endif %}
-                <!-- Message End-->
+                <button type="submit" class="btn btn-primary mx-2"><i class="fas fa-search"></i></button>
+            </form>
+            <!-- search area end -->
 
+            <!-- Poll list  -->
+            <ul class="list-group" style="height: 25rem;">
 
-                <!-- Nav for home page -->
-                <a class="btn btn-{% if 'name' in request.GET %}warning{% else %}primary{% endif %} mb-3" href="?name=True"
-                role="button"><i class="fas fa-sort-alpha-down"></i>
-                Name</a>
-                <a class="btn btn-{% if 'date' in request.GET %}warning{% else %}primary{% endif %} mb-3" href="?date=True"
-                role="button"><i class="far fa-clock"></i> Date</a>
-                <a class="btn btn-{% if 'vote' in request.GET %}warning{% else %}primary{% endif %} mb-3" href="?vote=True"
-                role="button"><i class="fas fa-poll"></i> Vote</a>    
-                <a class="btn btn-success mb-3 float-end" href="{% url 'polls:createpoll' %}" role="button">Create <i class="fas fa-plus"></i></a>
-                <!-- Nav for home page -->
+                {% if not polls %}
+                <div class="my-5 p-5">
+                    <h1 class="text-center my-4">No records found</h1>
+                </div>
+                {% else %}
 
-                <!-- search area start -->
-                <form class="form-inline d-flex flex-warp">
-                    <div class="form-group mr-sm-2 m-2">
-                        <input type="search" class="form-control" name="search" placeholder="Search" value={{ search_term }}>
-                    </div>
-                    <button type="submit" class="btn btn-primary m-2"><i class="fas fa-search"></i></button>
-                </form>
-                <!-- search area end -->
-
-                <!-- Poll list  -->
-                <ul class="list-group">
-                    
-                    {% if not polls %}
-                        <div style="height: 22rem;">
-                            <h1 class="text-center my-4">No records found</h1>
-                        </div>
-                    {% else %}
-                    
-                    {% for poll in polls %}
-                    <li class="list-group-item mb-1 p-3">
-                    <a class="text-decoration-none" href="{{poll.id}}">{{ poll.poll_text }}
+                {% for poll in polls %}
+                <li class="list-group-item mb-1 p-3">
+                    <a class="text-decoration-none" href="{% url 'polls:detail' poll.id %}">{{ poll.poll_text }}
                         {% if not poll.poll_status%}
                         <i class="fas fa-check-circle ms-3"></i>
                         {% endif %}
                     </a>
                     {% if request.user == poll.owner %}
+                    <a class="text-decoration-none float-end" href="{% url 'polls:result' poll.id %}">
+                        <i class="fas fa-vote-yea float-end btn btn-success btn-sm me-3"></i>
+                    </a>
                     {% if poll.poll_status %}
-                    <a href="{% url 'polls:end_poll' poll.id %}" data-toggle="tooltip" data-placement="top" title="End Poll"
-                        onclick="return confirm('Are you sure ?')"><i class="fas fa-step-forward float-end btn btn-danger btn-sm me-3"></i></a>
+                    <a href="{% url 'polls:end_poll' poll.id %}" data-toggle="tooltip" data-placement="top"
+                        title="End Poll" onclick="return confirm('Are you sure ?')"><i
+                            class="fas fa-step-forward float-end btn btn-danger btn-sm me-3"></i></a>
                     <a href="{% url 'polls:edit' poll.id %}" data-toggle="tooltip" data-placement="top"
                         title="Edit Poll"><i class="fas fa-pencil float-end btn btn-primary btn-sm me-3"></i></a>
                     {% endif %}
-                        {% endif %}
-                    </li>
-                    
-                    {% endfor %}
+                    {% endif %}
+                </li>
+
+                {% endfor %}
+                {% endif %}
+            </ul>
+            <!-- poll listing end -->
+            <nav class="mt-3">
+                <ul class="pagination">
+                    {% if polls.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1&{{ params }}">First</a></li>
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ polls.previous_page_number }}&{{ params }}">Previous</a></li>
+                    {% endif %}
+
+                    <li class="page-item active"><a class="page-link" href="">{{ polls.number }}</a></li>
+
+                    {% if polls.has_next %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ polls.next_page_number }}&{{ params }}">Next</a></li>
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ polls.paginator.num_pages }}&{{ params }}">Last</a></li>
                     {% endif %}
                 </ul>
-                <!-- poll listing end -->
-                <nav class="mt-3">
-                    <ul class="pagination">
-                        {% if polls.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?page=1&{{ params }}">First</a></li>
-                        <li class="page-item"><a class="page-link" href="?page={{ polls.previous_page_number }}&{{ params }}">Previous</a></li>
-                        {% endif %}
-    
-                        <li class="page-item active"><a class="page-link" href="">{{ polls.number }}</a></li>
-    
-                        {% if polls.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ polls.next_page_number }}&{{ params }}">Next</a></li>
-                        <li class="page-item"><a class="page-link" href="?page={{ polls.paginator.num_pages }}&{{ params }}">Last</a></li>
-                        {% endif %}
-                    </ul>
-                </nav>
+            </nav>
 
-            </div>
         </div>
     </div>
+</div>
 {% endblock content %}

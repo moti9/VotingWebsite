@@ -1,31 +1,37 @@
 {% extends 'base.html' %}
 
 
+{% block title %}
+    Poll ended
+{% endblock title %}
+    
+
 {% block content %}
-<div class="container">
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+<div class="container my-5 py-5 pb-5 d-flex justify-content-center align-items-center" style="min-height: 25rem;">
+    <div class="col-md-10">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        {% endif %}
     </div>
-    {% else %}
     <div class="row">
-        <div class="col-md-8 offset-sm-2">
-            <h3 class="mt-3 mb-3 text-center">Result for: {{ poll.text }}</h3>
+        <div class="col-md-6">
+            <h3 class="mt-3 mb-3 text-center">Result for poll : {{ poll.text }}</h3>
             <!-- progress bar -->
-    <div class="progress mt-3">
+            <div class="progress mt-3">
 
-        {% for choice in poll.get_result_dict %}
-        <div class="progress-bar bg-{{ choice.alert_class }}" role="progressbar" style="width: {{ choice.percentage }}%;" aria-valuenow="30" aria-valuemin="0"
-            aria-valuemax="100"><b>{{ choice.text }}-{{ choice.percentage|floatformat }}%</b></div>
-        {% endfor %}
+                {% for choice in poll.get_result_dict %}
+                <div class="progress-bar bg-{{ choice.alert_class }}" role="progressbar"
+                    style="width: {{ choice.percentage }}%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">
+                    <b>{{ choice.text }}-{{ choice.percentage|floatformat }}%</b></div>
+                {% endfor %}
 
-    </div>
+            </div>
             <ul class="list-group">
                 {% for choice in poll.choice_set.all %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -37,7 +43,7 @@
             {% endif %}
             <a class="btn btn-primary mt-3" href="{% url 'polls:list' %}" role="button">Back To Polls</a>
         </div>
-        
+
     </div>
 </div>
 {% endblock content %}

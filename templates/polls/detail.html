@@ -1,33 +1,39 @@
 {% extends 'base.html' %}
 
 
+{% block title %}
+    Poll details - {{poll}}
+{% endblock title %}
+    
+
 {% block content %}
-<div class="container">
-    <h1>Polls details page</h1>
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+<div class="container my-5 py-5 pb-5 d-flex justify-content-center align-items-center" style="min-height: 25rem;">
+    <div class="col-md-10 offset-md-1 shadow p-5 my-5">
+        {% if messages %}
+        <div class="alert alert-dismissible">
+            {% for message in messages %}
+            <div {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %}>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        {% endif %}
+        <h1 class="text-center">Polls Details</h1>
+        <hr>
+        <h2 class="mt-3 mb-3">{{ poll }}</h2>
+        <form action="{% url 'polls:vote' poll.id %}" method="POST">
+            {% csrf_token %}
+            {% for choice in poll.choice_set.all %}
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="choice" id="choice{{ forloop.counter }}"
+                    value="{{ choice.id }}">
+                <label class="form-check-label" for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary mt-3">Vote</button>
+            <a class="btn btn-warning mt-3" href="{% url 'polls:home' %}" role="button">Cancel</a>
+        </form>
     </div>
-    {% endif %}
-    <hr>
-    <h2 class="mt-3 mb-3">{{ poll }}</h2>
-    <form action="{% url 'polls:vote' poll.id %}" method="POST">
-        {% csrf_token %}
-        {% for choice in poll.choice_set.all %}
-        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
-        <br>
-        {% endfor %}
-        <input type="submit" value="Vote" class="btn btn-primary mt-3">
-        <a class="btn btn-warning mt-3" href="{% url 'polls:home' %}" role="button">Cancel</a>
-    </form>
-
 </div>
-
 {% endblock content %}

@@ -1,74 +1,98 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Welcome to VotingApp
+  Welcome to VotingApp
 {% endblock title %}
 
 {% block content %}
-<header class="my-2">
+<div class="col-md-10 d-flex justify-content-center my-5 offset-md-1">
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+    <div {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+<div class="container shadow p-4 mb-4 my-5 rounded-1">
+
+  <div class="my-2">
     <div class="jumbotron">
-        <div class="container d-flex flex-wrap justify-content-center align-items-center flex-column">
-            <h1>Welcome to Voting App!</h1>
-            <p class="lead">Cast your vote and make your voice heard!</p>
-            <a class="btn btn-primary btn-lg" href="polls" role="button">Explore Polling</a>
-        </div>
+      <div class="container d-flex flex-wrap justify-content-center align-items-center flex-column">
+        <h1>Welcome to Voting App!</h1>
+        <p class="lead">Cast your vote and make your voice heard!</p>
+        <a class="btn btn-primary btn-lg" href="polls" role="button">Explore Polling</a>
+      </div>
     </div>
-</header>
+  </div>
 
-<!-- About Section -->
-<section id="about">
+  <!-- About Section -->
+  <div id="about">
     <div class="container my-4">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2>About Voting App</h2>
-                {% comment %} <hr> {% endcomment %}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6">
-                <p>Voting App is a web-based application that allows registered voters to cast their votes online. It provides a convenient and secure way for voters to participate in elections without having to physically go to a polling station.</p>
-            </div>
-            <div class="col-lg-6">
-                <p>Voting App uses advanced encryption and authentication techniques to ensure the security and integrity of the voting process. It also provides real-time monitoring and auditing of the voting results to prevent fraud and manipulation.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Contact Section -->
-<section id="contact">
-    <div class="container d-flex flex-wrap justify-content-center flex-column">
       <div class="row">
         <div class="col-lg-12 text-center">
-          <h2>Contact Us</h2>
-          {% comment %} <hr class="divider"> {% endcomment %}
+          <h2>About Voting App</h2>
+          {% comment %}
+          <hr> {% endcomment %}
         </div>
       </div>
       <div class="row">
-        <div class="col-lg-8 mx-auto">
-          <form id="contact-form" method="POST" role="form">
-            {% csrf_token %}
-            <div class="form-group">
-              <label for="name">Name</label>
-              <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
-            </div>
-            <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
-            </div>
-            <div class="form-group">
-              <label for="subject">Subject</label>
-              <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
-            </div>
-            <div class="form-group">
-              <label for="message">Message</label>
-              <textarea class="form-control" rows="5" id="message" name="message" placeholder="Your Message" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block m-2">Send Message</button>
-          </form>
+        <div class="col-lg-6">
+          <p>Voting App is a web-based application that allows registered voters to cast their votes online. It provides
+            a convenient and secure way for voters to participate in elections without having to physically go to a
+            polling station.</p>
+        </div>
+        <div class="col-lg-6">
+          <p>Voting App uses advanced encryption and authentication techniques to ensure the security and integrity of
+            the voting process. It also provides real-time monitoring and auditing of the voting results to prevent
+            fraud and manipulation.</p>
         </div>
       </div>
     </div>
-  </section>
-  
+  </div>
+</div>
+
+<!-- Contact Section -->
+<section id="contact" class="mb-4 ">
+  <div class="container d-flex flex-wrap justify-content-center flex-column">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <h2>Contact Us</h2>
+        {% comment %}
+        <hr class="divider"> {% endcomment %}
+      </div>
+    </div>
+    <div class="row p-4">
+      <div class="col-lg-8 mx-auto p-4 shadow rounded">
+        <form id="contact-form" method="POST" role="form" action="{% url 'polls:contact' %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+          </div>
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea class="form-control" rows="5" id="message" name="message" placeholder="Your Message"
+              required></textarea>
+          </div>
+          <div class="d-flex justify-content-center my-2">
+            <button type="submit" class="btn btn-primary btn-block m-2">Send Message</button>
+            <button type="reset" class="btn btn-danger btn-block m-2">Clear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
 {% endblock content %}
