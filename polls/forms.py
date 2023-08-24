@@ -1,5 +1,5 @@
 from django import forms
-from .models import Poll, Choice
+from .models import Poll, Choice,Contact
 
 
 class EditPollForm(forms.ModelForm):
@@ -18,3 +18,17 @@ class ChoiceForm(forms.ModelForm):
         widgets = {
             'choice_text': forms.TextInput(attrs={'class': 'form-control', }),
         }
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ['name', 'email', 'subject', 'message']
+
+    # Add Bootstrap classes to form widgets
+    widgets = {
+        'name': forms.TextInput(attrs={'class': 'form-control'}),
+        'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        'subject': forms.TextInput(attrs={'class': 'form-control'}),
+        'message': forms.Textarea(attrs={'class': 'form-control'}),
+    }

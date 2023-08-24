@@ -12,6 +12,10 @@ import secrets
 
 
 def login_user(request):
+    if request.user.is_authenticated:
+        messages.error(request, "Hey, you're already loggedin.", extra_tags="alert alert-warning alert-dismissible fade show")
+        return redirect("polls:home")
+    
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -23,6 +27,7 @@ def login_user(request):
             if verified.is_active:
                 login(request, user)
             else:
+                messages.error(request,"Please activate your account.", extra_tags="alert alert-primary alert-dismissible fade show")
                 return redirect('accounts:verify_email')
             redirect_url = request.GET.get('next', 'polls:home')
             return redirect(redirect_url)
@@ -35,10 +40,13 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    return redirect('polls:home')
+    return redirect('home')
 
 
 def create_user(request):
+    if request.user.is_authenticated:
+        messages.error(request, "Hey, you're already loggedin.", extra_tags="alert alert-warning alert-dismissible fade show")
+        return redirect("home")
     if request.method == 'POST':
         check1 = False
         check2 = False
@@ -65,11 +73,9 @@ def create_user(request):
 
             if check1 or check2 or check3:
                 messages.error(
-                    request, "Registration Failed!", extra_tags='alert alert-warning alert-dismissible fade show')
+                    request, "Registration Failed!", extra_tags='alert alert-danger alert-dismissible fade show')
                 return redirect('accounts:register')
             else:
-                user = User.objects.create_user(
-                    username=username, password=password1, email=email)
                 # mailStart
                 # try:
                 #     htmly = get_template('accounts/email.html')
@@ -83,10 +89,18 @@ def create_user(request):
                 # except:
                 #     pass
                 #######
+                user = User.objects.create_user(
+                    username=username, password=password1, email=email)
                 try:
-                    user = User.objects.get(email=email)
-                    verification = EmailVerification(user=user)
-                    verification.save()
+                    # user = User.objects.get(email=email)
+                    verification, created = EmailVerification.objects.get_or_create(user=user)
+                    if created:
+                        verification.is_active = False
+                        code = str(secrets.randbelow(10**8))
+                        verification.code = code
+                        verification.save()
+                    # verification = EmailVerification(user=user)
+                    # verification.save()
                     subject = 'Email Verification Code'
                     message = f'Your email verification code is: {verification.code}'
                     from_email = settings.EMAIL_HOST_USER
@@ -95,10 +109,11 @@ def create_user(request):
                     # return redirect('accounts:verify_email')
                     # mailEnd
                     messages.success(
-                        request, f'Thanks for registering {user.username}.', extra_tags='alert alert-success alert-dismissible fade')
+                        request, f'Thanks for registering {user.username}.', extra_tags='alert alert-success alert-dismissible fade show')
                     return redirect('accounts:verify_email')
-                except:
-                    pass
+                except Exception:
+                    messages.error(request,"Oops !! some error occured, please try again", extra_tags="alert alert-danger alert-dismissible fade show")
+                    return redirect("accounts:register")
             return redirect('accounts:login')
     else:
         form = UserRegistrationForm()
@@ -108,19 +123,28 @@ def create_user(request):
 def send_verification_code(request):
     if request.method == 'POST':
         email = request.POST['email']
-        user = User.objects.get(email=email)
-        verification = EmailVerification(user=user)
-        if verification != None:
-            verification.is_active=False
-            # code = secrets.token_urlsafe(24)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            messages.error(request,"User with this email does not exist.", extra_tags="alert alert-danger alert-dismissible fade show")
+            return redirect("accounts:send_verification_code")
+        verification, created = EmailVerification.objects.get_or_create(user=user)
+        if created:
+            verification.is_active = False
             code = str(secrets.randbelow(10**8))
             verification.code = code
-        verification.save()
-        subject = 'Email Verification Code'
-        message = f'Your email verification code is: {verification.code}'
+            verification.save()
+        
+        subject = 'VotingApp Email Verification Code'
+        message = f'Please verify your account to use VotingApp. Your email verification code is: {verification.code}'
         from_email = settings.EMAIL_HOST_USER
         recipient_list = [email]
-        send_mail(subject, message, from_email, recipient_list)
+        # send_mail(subject, message, from_email, recipient_list)
+        try:
+            send_mail(subject, message, from_email, recipient_list)
+        except Exception as e:
+            messages.error(request,"Oops!! Please try again.", extra_tags="alert alert-danger alert-dismissible fade show")
+            return redirect("accounts:send_verification_code")
         return redirect('accounts:verify_email')
     else:
         return render(request, 'accounts/send_verification_code.html')
@@ -129,10 +153,18 @@ def send_verification_code(request):
 def verify_email(request):
     if request.method == 'POST':
         email = request.POST['email']
-        user = User.objects.get(email=email)
         code = request.POST['code']
-        verification = EmailVerification.objects.get(user=user, code=code)
-        user = verification.user
+        try:
+            user = User.objects.get(email=email)
+            verification = EmailVerification.objects.get(user=user, code=code)
+        except User.DoesNotExist:
+            messages.error(request,"User with this email does not exist.", extra_tags="alert alert-danger alert-dismissible fade show")
+            return redirect('accounts:verify_email')
+
+        except EmailVerification.DoesNotExist:
+            messages.error(request,"Sorry, some error occured.", extra_tags="alert alert-danger alert-dismissible fade show")
+            return redirect('accounts:verify_email')
+        verification.is_active = True
         user.is_active = True
         user.save()
         login(request, user)
@@ -144,3 +176,32 @@ def verify_email(request):
         email_verification = EmailVerification()
 
         return render(request, 'accounts/verify_email.html', {'email_verification': email_verification})
+
+###############################################################
+#################@DUMP-AREA-STARTED@###########################
+###############################################################
+
+
+# def send_verification_code(request):
+#     if request.method == 'POST':
+#         email = request.POST['email']
+#         try:
+#             user = User.objects.get(email=email)
+#         except User.DoesNotExist:
+#             messages.error(request,"User with this email does not exist.", extra_tags="alert alert-danger alert-dismissible fade show")
+#             return redirect("accounts:send_verification_code")
+#         verification = EmailVerification(user=user)
+#         if verification != None:
+#             verification.is_active=False
+#             # code = secrets.token_urlsafe(24)
+#             code = str(secrets.randbelow(10**8))
+#             verification.code = code
+#         verification.save()
+#         subject = 'Email Verification Code'
+#         message = f'Your email verification code is: {verification.code}'
+#         from_email = settings.EMAIL_HOST_USER
+#         recipient_list = [email]
+#         send_mail(subject, message, from_email, recipient_list)
+#         return redirect('accounts:verify_email')
+#     else:
+#         return render(request, 'accounts/send_verification_code.html')

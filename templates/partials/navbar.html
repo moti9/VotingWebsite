@@ -1,30 +1,44 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-     <a class="navbar-brand mx-2" href="{% url 'home' %}"><i class="fas fa-poll"></i></a>
-    {% comment %} <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
-        aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation"> {% endcomment %}
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="collapsibleNavId">
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-             <li class="nav-item active"> 
-                 <a class="nav-link active" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a> 
-             </li> 
-            {% if request.user.is_authenticated %}
-            <li class="nav-item active">
-                <a class="nav-link active" href="/polls">Polls</a>
-            </li>
-            {% endif %}
-        </ul>
-        <div class="navbar-nav ms-auto">
-            {% if request.user.is_authenticated %}
-            {% comment %} <a class="nav-link" href="{% url 'polls:list_by_user' %}">My Polls</a> {% endcomment %}
-            <a class="nav-link active" href="{% url 'polls:list_by_user' %}">My Polls</a>
-            <a class="nav-link active" href="{% url 'accounts:logout' %}">Logout</a>
-            {% else %}
-                <a class="nav-link active float-right" href="{% url 'accounts:login' %}">Login</a>
-                <a class="nav-link active float-right" href="{% url 'accounts:register' %}">Register</a>
-            {% endif %}
+{% load static %}
+<style>
+    /* Custom CSS for hover effect */
+    .nav-item:hover .nav-link {
+        color: #007BFF; /* Change the text color on hover */
+    }
+    .navbar-nav .nav-link:hover {
+        color: #007BFF; /* Change the text color on hover */
+    }
+</style>
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark d-flex justify-content-center flex-column sticky-top p-4 fw-bold">
+    <div>
+        <img style="width: 5rem;" src="{% static 'images/header.png' %}" alt="Vote image">
+    </div>
+    <div class="container text-bg-dark">
+        <a class="navbar-brand mx-2" href="{% url 'home' %}"><i class="fas fa-poll"></i></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active bold" href="{% url 'home' %}">Home</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link active bold" href="/polls">Polls</a>
+                </li>
+                {% endif %}
+            </ul>
+            <div class="navbar-nav ms-auto">
+                {% if request.user.is_authenticated %}
+                <a class="nav-link active bold" href="{% url 'polls:list_by_user' %}">My Polls</a>
+                <a class="nav-link active bold" href="{% url 'accounts:logout' %}">Logout</a>
+                {% else %}
+                <a class="nav-link active bold" href="{% url 'accounts:login' %}">Login</a>
+                <a class="nav-link active bold" href="{% url 'accounts:register' %}">Register</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </nav>
