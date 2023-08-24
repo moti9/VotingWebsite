@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-(pxnfm^wd4f18(o^rrmgay+)(own94=6bb=5#@hl$k+=^hi^=j'
-DJANGO_PASSKEY = "itxmeberutxemwzejkvdxvm"
+# DJANGO_PASSKEY = "itxmeberutxemwzejkvdxvm"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -137,7 +137,7 @@ EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = "EMAIL_ID"
 EMAIL_HOST_USER = "superuser9m@gmail.com"
 # EMAIL_HOST_PASSWORD = "EMAIL_APP_PASSWORD"
-EMAIL_HOST_PASSWORD = "eberutxemwzejkvd"
+EMAIL_HOST_PASSWORD = "PASSWORD"
 # setup end here
 
 # Default primary key field type
